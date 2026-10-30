@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>വെള്ളിത്തിര | Login & Register</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #080a10;
+            --surface: #111622;
+            --surface-light: #1a2232;
+            --text: #f7f8fc;
+            --muted: #a4aec0;
+            --accent: #ffc247;
+            --accent-hover: #ffda7c;
+            --border: rgba(163, 178, 205, .16);
+            --danger: #ff7373;
+            --glow: rgba(255, 194, 71, .16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(ellipse at top, #182033 0%, transparent 55%),
+                var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 620px;
+            display: grid;
+            grid-template-columns: 1fr 0.9fr;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, .4);
+        }
+
+        /* Left side */
+        .hero {
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background:
+                radial-gradient(circle at 20% 35%, var(--glow), transparent 40%),
+                linear-gradient(145deg, #151d2c, #0c1019);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .hero-content {
+            margin: 55px 0;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 4vw, 52px);
+            line-height: 1.12;
+            letter-spacing: -1.8px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero p {
+            max-width: 360px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .movie-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .movie-tags span {
+            padding: 9px 13px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 12px;
+            color: #d7dce7;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* Right side */
+        .auth-panel {
+            padding: 42px 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 370px;
+        }
+
+        .mobile-logo {
+            display: none;
+            margin-bottom: 32px;
+        }
+
+        .form-heading {
+            margin-bottom: 30px;
+        }
+
+        .form-heading h2 {
+            font-size: 29px;
+            letter-spacing: -.8px;
+            margin-bottom: 10px;
+        }
+
+        .form-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 49px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--text);
+            padding: 0 14px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .form-group input::placeholder {
+            color: #758198;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--glow);
+        }
+
+        .password-input {
+            padding-right: 65px !important;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 5px 0 23px;
+            font-size: 12px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--muted);
+        }
+
+        .remember input {
+            accent-color: var(--accent);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+        }
+
+        .primary-btn {
+            width: 100%;
+            height: 49px;
+            border: none;
+            border-radius: 9px;
+            background: var(--accent);
+            color: #17120a;
+            font-weight: 800;
+            font-size: 14px;
+            transition: background .2s, transform .2s;
+        }
+
+        .primary-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .switch-text {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .switch-btn {
+            border: none;
+            background: none;
+            color: var(--accent);
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .switch-btn:hover {
+            color: var(--accent-hover);
+        }
+
+        .message {
+            display: none;
+            padding: 11px 13px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            display: block;
+            color: var(--danger);
+            background: rgba(255, 115, 115, .08);
+            border: 1px solid rgba(255, 115, 115, .2);
+        }
+
+        .message.success {
+            display: block;
+            color: var(--accent);
+            background: var(--glow);
+            border: 1px solid var(--border);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive design */
+        @media (max-width: 760px) {
+            body {
+                padding: 16px;
+            }
+
+            .page {
+                max-width: 460px;
+                min-height: auto;
+                grid-template-columns: 1fr;
+                border-radius: 18px;
+            }
+
+            .hero {
+                display: none;
+            }
+
+            .auth-panel {
+                padding: 36px 25px;
+            }
+
+            .mobile-logo {
+                display: block;
+            }
+
+            .form-heading h2 {
+                font-size: 27px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .auth-panel {
+                padding: 28px 18px;
+            }
+
+            .form-options {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page">
+
+        <!-- Left promotional section -->
+        <section class="hero">
+            <div class="logo">വെള്ളി<span>ത്തിര</span>.</div>
+
+            <div class="hero-content">
+                <span class="eyebrow">Your movie community</span>
+
+                <h1>Every movie has a <span>story.</span></h1>
+
+                <p>
+                    Discover great films, share your opinions, and find out
+                    what fellow movie lovers think. Your next favourite
+                    movie starts here.
+                </p>
+
+                <div class="movie-tags">
+                    <span>🎬 Discover</span>
+                    <span>⭐ Rate</span>
+                    <span>💬 Review</span>
+                </div>
+            </div>
+
+            <div class="footer">
+                Made for movie lovers. Watch. Review. Repeat.
+            </div>
+        </section>
+
+        <!-- Login and register section -->
+        <section class="auth-panel">
+            <div class="auth-card">
+
+                <div class="mobile-logo logo">
+                    വെള്ളി<span>ത്തിര</span>.
+                </div>
+
+                <!-- LOGIN FORM: shown first -->
+                <form id="loginForm">
+                    <div class="form-heading">
+                        <span class="eyebrow">Welcome back</span>
+                        <h2>Sign in</h2>
+                        <p>Pick up where your movie journey left off.</p>
+                    </div>
+
+                    <div class="message" id="loginMessage" role="status" aria-live="polite"></div>
+
+                    <div class="form-group">
+                        <label for="loginEmail">Email address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="loginPassword" class="password-input"
+                                placeholder="Enter your password" autocomplete="current-password" required
+                                minlength="6">
+                            <button type="button" class="toggle-password" data-target="loginPassword">
+                                SHOW
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember">
+                            <input type="checkbox" id="rememberMe">
+                            Remember me
+                        </label>
+
+                        <a href="#" id="forgotPassword">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" onclick="loginUser()" class="primary-btn">
+                        Sign in →
+                    </button>
+
+                    <p class="switch-text">
+                        New to വെള്ളിത്തിര?
+                        <button type="button" class="switch-btn" data-show="register">
+                            Create an account
+                        </button>
+                    </p>
+                </form>
+
+                <!-- REGISTER FORM: hidden initially -->
+                <form id="registerForm" class="hidden">
+                    <div class="form-heading">
+                        <span class="eyebrow">Join the community</span>
+                        <h2>Create account</h2>
+                        <p>Sign up and make your voice heard.</p>
+                    </div>
+
+                    <div class="message" id="registerMessage" role="status" aria-live="polite"></div>
+
+                    <div class="form-group">
+                        <label for="registerName">Full name</label>
+                        <input type="text" id="registerName" placeholder="Your name" autocomplete="name" required
+                            minlength="2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email address</label>
+                        <input type="email" id="registerEmail" placeholder="you@example.com" autocomplete="email"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="registerPassword" class="password-input"
+                                placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+                            <button type="button" class="toggle-password" data-target="registerPassword">
+                                SHOW
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="confirmPassword" class="password-input"
+                                placeholder="Enter password again" autocomplete="new-password" minlength="8" required>
+                            <button type="button" class="toggle-password" data-target="confirmPassword">
+                                SHOW
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" onclick="registerUser()" class="primary-btn">
+                        Create my account →
+                    </button>
+
+                    <p class="switch-text">
+                        Already have an account?
+                        <button type="button" class="switch-btn" data-show="login">
+                            Sign in
+                        </button>
+                    </p>
+                </form>
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const registerForm = document.getElementById("registerForm");
+
+        // Switch between login and register forms
+        document.querySelectorAll("[data-show]").forEach(button => {
+            button.addEventListener("click", () => {
+                const showRegister = button.dataset.show === "register";
+
+                loginForm.classList.toggle("hidden", showRegister);
+                registerForm.classList.toggle("hidden", !showRegister);
+
+                clearMessages();
+
+                // Move focus to the first field of the new form
+                const firstField = showRegister
+                    ? document.getElementById("registerName")
+                    : document.getElementById("loginEmail");
+
+                firstField.focus();
+            });
+        });
+
+        // Show or hide passwords
+        document.querySelectorAll(".toggle-password").forEach(button => {
+            button.addEventListener("click", () => {
+                const input = document.getElementById(button.dataset.target);
+                const isHidden = input.type === "password";
+
+                input.type = isHidden ? "text" : "password";
+                button.textContent = isHidden ? "HIDE" : "SHOW";
+            });
+        });
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = "message " + type;
+        }
+
+        function clearMessages() {
+            document.querySelectorAll(".message").forEach(message => {
+                message.textContent = "";
+                message.className = "message";
+            });
+        }
+
+
+        async function loginUser(event) {
+            if (event) event.preventDefault();
+
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+
+            try {
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showMessage(
+                        "loginMessage",
+                        data.message || "Login failed.",
+                        "error"
+                    );
+                    return;
+                }
+
+                // Get the logged-in user's role
+                const role = data.user?.role;
+
+                showMessage("loginMessage", "Login successful!", "success");
+
+                // Redirect according to role
+                if (role === "admin") {
+                    window.location.href = "/admin";
+                } else if (role === "user") {
+                    window.location.href = "/home";
+                } else {
+                    showMessage(
+                        "loginMessage",
+                        "User role is missing or invalid.",
+                        "error"
+                    );
+                }
+
+            } catch (error) {
+                console.error("Login error:", error);
+
+                showMessage(
+                    "loginMessage",
+                    "Unable to connect to the server. Please try again.",
+                    "error"
+                );
+            }
+        }
+
+        // Attach to your login form
+        document.getElementById("loginForm").addEventListener(
+            "submit",
+            loginUser
+        );
+
+
+
+        async function registerUser() {
+            event.preventDefault();
+
+            clearMessages();
+
+            const name = document.getElementById("registerName").value.trim();
+            const email = document.getElementById("registerEmail").value.trim();
+            const password = document.getElementById("registerPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                showMessage(
+                    "registerMessage",
+                    "Passwords do not match.",
+                    "error"
+                );
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Registration failed.");
+                }
+
+                showMessage(
+                    "registerMessage",
+                    data.message || "Registration successful! Please log in.",
+                    "success"
+                );
+
+                document.getElementById("registerForm").reset();
+
+                // Switch to login after successful registration
+                setTimeout(() => {
+                    document.querySelector('[data-show="login"]').click();
+                }, 1500);
+
+            } catch (error) {
+                showMessage(
+                    "registerMessage",
+                    error.message || "Unable to connect to the server.",
+                    "error"
+                );
+            }
+        }
+
+
+        // Placeholder for a future password-reset feature
+        document.getElementById("forgotPassword").addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+
+                showMessage(
+                    "loginMessage",
+                    "Password reset is not connected yet. Add a password-reset API to enable it.",
+                    "error"
+                );
+            }
+        );
+    </script>
+
+</body>
+
+</html>

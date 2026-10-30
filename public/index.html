@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover movies, read reviews, and share your ratings.">
+    <title>വെള്ളിത്തിര | Movie Review System</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #080a10;
+            --surface: #111622;
+            --surface-light: #1a2232;
+            --text: #f7f8fc;
+            --muted: #a4aec0;
+            --accent: #ffc247;
+            --accent-hover: #ffda7c;
+            --border: rgba(163, 178, 205, .16);
+            --danger: #ff7373;
+            --glow: rgba(255, 194, 71, .16)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: radial-gradient(ellipse at 15% 0%, rgba(47, 68, 112, .18), transparent 38rem), radial-gradient(ellipse at 90% 34%, rgba(255, 194, 71, .055), transparent 32rem), var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit
+        }
+
+        button,
+        select {
+            cursor: pointer
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px
+        }
+
+        .container {
+            width: min(1120px, 90%);
+            margin-inline: auto
+        }
+
+        .navbar {
+            min-height: 76px;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            background: rgba(8, 10, 16, .82);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1.2px;
+            white-space: nowrap;
+            text-shadow: 0 0 28px var(--glow)
+        }
+
+        .logo span {
+            color: var(--accent)
+        }
+
+        .navbar nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px
+        }
+
+        .navbar nav a {
+            color: var(--muted);
+            font-size: .92rem;
+            font-weight: 650;
+            padding: 8px 11px;
+            border-radius: 8px;
+            transition: color .2s, background .2s
+        }
+
+        .navbar nav a:hover {
+            color: var(--accent);
+            background: rgba(255, 194, 71, .08)
+        }
+
+        .hero {
+            min-height: 590px;
+            padding: 100px 8%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            background: linear-gradient(90deg, rgba(8, 10, 16, .98) 0%, rgba(8, 10, 16, .87) 37%, rgba(8, 10, 16, .28) 100%), linear-gradient(0deg, var(--bg) 0%, transparent 32%), url("/BKU.jpeg") center 30% / cover no-repeat, #171c28
+        }
+
+        .hero-content {
+            max-width: 650px
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: .72rem;
+            font-weight: 850;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-bottom: 13px
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6.4vw, 5.2rem);
+            line-height: 1.03;
+            letter-spacing: -2.8px;
+            margin-bottom: 22px;
+            text-wrap: balance
+        }
+
+        .hero h1 span {
+            color: var(--accent)
+        }
+
+        .hero-description {
+            color: #d0d3dc;
+            max-width: 510px;
+            margin-bottom: 28px;
+            font-size: 1.05rem
+        }
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 23px;
+            font-weight: 800;
+            box-shadow: 0 8px 28px var(--glow);
+            transition: background .2s, transform .2s, box-shadow .2s
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(255, 194, 71, .22)
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #17130a
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover)
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: -28px;
+            position: relative;
+            z-index: 2;
+            background: rgba(17, 22, 34, .94);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, .24);
+            backdrop-filter: blur(16px)
+        }
+
+        .stat {
+            text-align: center;
+            padding: 25px 12px
+        }
+
+        .stat+.stat {
+            border-left: 1px solid var(--border)
+        }
+
+        .stat strong {
+            display: block;
+            color: var(--accent);
+            font-size: 1.8rem
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 0.9rem
+        }
+
+        .section {
+            padding-top: 88px;
+            padding-bottom: 28px
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px
+        }
+
+        .section-heading h2,
+        .form-card h2 {
+            font-size: clamp(1.9rem, 4vw, 2.65rem);
+            line-height: 1.15;
+            letter-spacing: -1.1px
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr 220px;
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .filters input,
+        .filters select,
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 13px 14px;
+            border-radius: 7px;
+            outline: none
+        }
+
+        .filters input:focus,
+        .filters select:focus,
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent)
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #81899a
+        }
+
+        select option {
+            background: var(--surface);
+            color: var(--text)
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 25px
+        }
+
+        .movie-card {
+            min-width: 0;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(180deg, rgba(25, 32, 47, .98), rgba(15, 19, 29, .98));
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+            transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease
+        }
+
+        .movie-card:hover {
+            transform: translateY(-7px);
+            border-color: rgba(255, 194, 71, .48);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, .32), 0 0 25px rgba(255, 194, 71, .055)
+        }
+
+        .movie-poster {
+            display: block;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+            background: var(--surface-light);
+            transition: transform .45s ease, filter .3s ease
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.035);
+            filter: saturate(1.08)
+        }
+
+        .movie-poster[hidden],
+        .poster-placeholder[hidden] {
+            display: none
+        }
+
+        .poster-placeholder {
+            display: grid;
+            place-items: center;
+            aspect-ratio: 2 / 3;
+            background: linear-gradient(135deg, #222b3b, #131721);
+            color: var(--accent);
+            font-size: 3rem
+        }
+
+        .movie-info {
+            padding: 16px
+        }
+
+        .poster-placeholder {
+            aspect-ratio: 2 / 3;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #222b3b, #131721);
+            color: var(--accent);
+            font-size: 3rem;
+            font-weight: bold
+        }
+
+        .movie-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 9px
+        }
+
+        .genre-tag {
+            background: rgba(255, 194, 71, .1);
+            color: #ffda8a;
+            border: 1px solid rgba(255, 194, 71, .12);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: .7rem;
+            font-weight: 700
+        }
+
+        .movie-year {
+            color: var(--muted);
+            font-size: .78rem
+        }
+
+        .upcoming-label {
+            display: inline-block;
+            margin-top: 7px;
+            color: var(--accent);
+            font-size: .68rem;
+            font-weight: 850;
+            letter-spacing: 1.2px
+        }
+
+        .movie-title {
+            font-size: 1.02rem;
+            line-height: 1.35;
+            margin-bottom: 6px;
+            overflow-wrap: anywhere
+        }
+
+        .rating {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.92rem
+        }
+
+        .review-total {
+            color: var(--muted);
+            font-weight: 400;
+            font-size: 0.8rem
+        }
+
+        .movie-description {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-top: 10px;
+            overflow-wrap: anywhere
+        }
+
+        .reviews-section {
+            margin-top: 75px;
+            padding: 78px 0;
+            background: linear-gradient(135deg, rgba(20, 27, 42, .94), rgba(10, 13, 21, .98));
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border)
+        }
+
+        .review-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px
+        }
+
+        .review-card {
+            background: rgba(17, 22, 34, .86);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            min-width: 0;
+            transition: border-color .2s, transform .2s
+        }
+
+        .review-card:hover {
+            border-color: rgba(255, 194, 71, .3);
+            transform: translateY(-3px)
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 12px;
+            margin-bottom: 12px
+        }
+
+        .review-header h3 {
+            font-size: 1.08rem;
+            overflow-wrap: anywhere
+        }
+
+        .reviewer {
+            color: var(--muted);
+            font-size: 0.84rem
+        }
+
+        .review-body {
+            color: #d1d5df;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap
+        }
+
+        .review-date {
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 15px
+        }
+
+        .form-card {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: clamp(24px, 5vw, 42px);
+            background: linear-gradient(145deg, rgba(23, 30, 45, .98), rgba(14, 18, 28, .98));
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .2)
+        }
+
+        .form-card>.muted {
+            margin-top: 10px;
+            margin-bottom: 28px
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            min-width: 0
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.92rem;
+            font-weight: 600
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px
+        }
+
+        .star-picker {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 4px
+        }
+
+        .star-picker input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px
+        }
+
+        .star-picker label {
+            font-size: 2rem;
+            color: #4c5260;
+            cursor: pointer;
+            margin: 0;
+            transition: color 0.15s
+        }
+
+        .star-picker label:hover,
+        .star-picker label:hover~label,
+        .star-picker input:checked~label {
+            color: var(--accent)
+        }
+
+        .star-picker input:focus-visible+label {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px
+        }
+
+        .form-message {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--accent)
+        }
+
+        .form-message.error {
+            color: var(--danger)
+        }
+
+        .empty-state {
+            color: var(--muted);
+            padding: 25px 0;
+            text-align: center
+        }
+
+        .footer {
+            text-align: center;
+            padding: 45px 20px;
+            margin-top: 50px;
+            border-top: 1px solid var(--border)
+        }
+
+        .footer p {
+            color: var(--muted);
+            margin-top: 10px;
+            font-size: 0.9rem
+        }
+
+        .footer .copyright {
+            font-size: 0.8rem;
+            margin-top: 18px
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            border-radius: 10px;
+            background: rgba(8, 11, 18, .72);
+            transition: border-color .2s, box-shadow .2s, background .2s
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            background: rgba(8, 11, 18, .95);
+            box-shadow: 0 0 0 4px rgba(255, 194, 71, .08)
+        }
+
+
+        .review-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: #181818;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-4px);
+            border-color: #e50914;
+        }
+
+        .review-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .review-card-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            white-space: nowrap;
+        }
+
+        .review-comment {
+            color: #ddd;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .review-date {
+            color: #999;
+        }
+
+        .footer {
+            background: rgba(6, 8, 13, .45)
+        }
+
+        .footer .logo {
+            display: inline-block
+        }
+
+        .footer p {
+            line-height: 1.9
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: #111
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important
+            }
+        }
+
+        @media (max-width:900px) {
+            .movie-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr))
+            }
+
+            .hero {
+                padding-inline: 6%
+            }
+        }
+
+        @media (max-width:650px) {
+            .navbar {
+                padding: 14px 5%;
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px
+            }
+
+            .navbar nav {
+                gap: 10px 18px
+            }
+
+            .navbar nav a {
+                font-size: 0.86rem
+            }
+
+            .hero {
+                min-height: 450px;
+                padding: 70px 6%;
+                background-position: center
+            }
+
+            .hero h1 {
+                letter-spacing: -1px
+            }
+
+            .stats {
+                width: 90%
+            }
+
+            .stat {
+                padding: 18px 5px
+            }
+
+            .stat strong {
+                font-size: 1.4rem
+            }
+
+            .stat span {
+                font-size: 0.76rem
+            }
+
+            .section {
+                padding-top: 55px
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 13px
+            }
+
+            .movie-info {
+                padding: 11px
+            }
+
+            .movie-title {
+                font-size: 0.98rem
+            }
+
+            .movie-topline {
+                align-items: flex-start;
+                flex-wrap: wrap
+            }
+
+            .filters {
+                grid-template-columns: 1fr
+            }
+
+            .review-list {
+                grid-template-columns: 1fr
+            }
+
+            .form-card {
+                padding: 22px 16px
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0
+            }
+        }
+
+        @media (max-width:360px) {
+            .movie-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="logo" href="#home">വെള്ളി<span>ത്തിര</span></a>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#movies">Movies</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#add-review">Add Review</a>
+        </nav>
+    </header>
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <p class="eyebrow">YOUR MOVIE. YOUR OPINION.</p>
+                <h1>Discover movies.<br><span>Share your story.</span></h1>
+                <p class="hero-description">
+                    സിനിമ കാണാം, അഭിപ്രായം പറയാം, സിനിമയെ ആഘോഷിക്കാം! 🎬
+                    <br> <br>
+                    പുതിയ സിനിമകൾ പരിചയപ്പെടാം, പ്രേക്ഷകരുടെ അഭിപ്രായങ്ങൾ അറിയാം, കണ്ട സിനിമകളെക്കുറിച്ച് നമ്മുടെ
+                    അഭിപ്രായങ്ങളും പങ്കുവെക്കാം. സിനിമയെ സ്നേഹിക്കുന്നവർക്കായി ഒരു അടിപൊളി ഇടം!
+                </p>
+                <a href="#movies" class="btn btn-primary">Explore Movies <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+        <section class="stats container" aria-label="Website statistics">
+            <div class="stat">
+                <strong id="movie-count">16</strong>
+                <span>Movies</span>
+            </div>
+            <div class="stat">
+                <strong id="review-count">3</strong>
+                <span>Reviews</span>
+            </div>
+            <div class="stat">
+                <strong id="average-rating">4.3</strong>
+                <span>Average Rating</span>
+            </div>
+        </section>
+        <section class="section container" id="movies">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">THE COLLECTION</p>
+                    <h2>Explore Movies</h2> <br>
+                </div>
+                <div class="movie-grid" id="movie-grid">
+                    <!-- Movie 1: BACHELOR PARTY 2 D'eux -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://images.filmibeat.com/img/popcorn/movie_posters/bachelorpartydeux-20261005155533-24100.jpg"
+                            alt="Bachelor Party Deux poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action / Comedy</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">BACHELOR PARTY 2 D'eux</h3>
+                            <p class="movie-year upcoming-label">COMING SOON</p>
+                        </div>
+                    </div>
+                    <!-- Movie 2: PREMALU -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://mir-s3-cdn-cf.behance.net/project_modules/fs/26a772243789059.69896edc0d639.jpg"
+                            alt="Premalu poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Romance / Comedy</span>
+                                <span class="movie-year">2024</span>
+                            </div>
+                            <h3 class="movie-title">PREMALU</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 3: JAILER 2 -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://stat5.bollywoodhungama.in/wp-content/uploads/2026/10/Jailer-2-05.jpeg"
+                            alt="Athiradi movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action / Crime</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">JAILER 2</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 4: KHALIFA-->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://static.toiimg.com/thumb/imgsize-257464,msid-123747405,width-600,resizemode-4/123747405.jpg"
+                            alt="Drishyam 3 movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action / Thriller</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">KHALIFA</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 5: SPIDERMAN BRAND NEW DAY -->
+                    <div class="movie-card">
+                        <img class="movie-poster" src="https://image.tmdb.org/t/p/w500/yyB2VJEW3an2xCdcYCPQhn9QERR.jpg"
+                            alt="Yeh Jawaani Hai Deewani poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action / Adventure</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">SPIDER MAN : BRAND NEW DAY</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 6: ATHIRADI -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://upload.wikimedia.org/wikipedia/ml/thumb/4/4c/Athiradi_(2026)_poster.jpg/960px-Athiradi_(2026)_poster.jpg"
+                            alt="Jailer 2 poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">ATHIRADI</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 7: DHRISHYAM 3 -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://images.news18.com/ibnlive/uploads/2026/01/Drishyam-3n-2026-01-e5d5d160efc7522ef5fa814aee0edaea.jpeg"
+                            alt="Khalifa poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Crime drama</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">DHRISHYAM 3</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 8: YEH JAWAANI HAI DEEWANI -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://m.media-amazon.com/images/M/MV5BODA4MjM2ODk4OF5BMl5BanBnXkFtZTcwNDgzODk1OQ@@._V1_FMjpg_UX1000_.jpg"
+                            alt="Spider-Man Brand New Day poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Comedy drama</span>
+                                <span class="movie-year">2013</span>
+                            </div>
+                            <h3 class="movie-title">YEH JAWAANI HAI DEEWANI</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 9: LOKAH CHAPTER 1 : CHANDRA-->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://m.media-amazon.com/images/M/MV5BZThiYjY3ODUtOGM4Yy00OGE0LTliM2UtYjFlNDY0Mzg3OWJlXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+                            alt="Mollywood Times poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action</span>
+                                <span class="movie-year">2025</span>
+                            </div>
+                            <h3 class="movie-title">LOKAH CHAPTER 1 : CHANDRA</h3>
+                        </div>
+                    </div>
+                    <!-- Movie 10: KARUPPU -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://m.media-amazon.com/images/M/MV5BN2ZmMTg4YzYtZWE1NS00NTE5LWE3ZWEtNjcwNWY4ZTM4MTNmXkEyXkFqcGc@._V1_.jpg"
+                            alt="Karuppu Tamil movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action / Fantasy</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">KARUPPU</h3>
+                        </div>
+                    </div>
+
+                    <!-- Movie 11: AARAAM THAMBURAN -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://images.filmibeat.com/img/popcorn/fan_images/movie/5604/aaram-thamburan-photos-images-63072.jpg"
+                            alt="Ramayana movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action & Adventure</span>
+                                <span class="movie-year">1997</span>
+                            </div>
+                            <h3 class="movie-title">AARAM THAMBURAN</h3>
+                            <p class="movie-year upcoming-label"></p>
+                        </div>
+                    </div>
+
+                    <!-- Movie 12: MANICHITHRATHAZHU -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://i.pinimg.com/originals/04/21/eb/0421eb351e65b14b81653867ea10d0d3.jpg"
+                            alt="Ramayana movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Horror</span>
+                                <span class="movie-year">1993</span>
+                            </div>
+                            <h3 class="movie-title">MANICHITHRATHAZHU</h3>
+                            <p class="movie-year upcoming-label"></p>
+                        </div>
+                    </div>
+                    <!-- Movie 13: MOLLYWOOD TIMES -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://m.media-amazon.com/images/M/MV5BZmU1ZDQ1MjUtYTcwZi00YWE0LWEwMWItYjY3YmEwNmI2MGRkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpgE"
+                            alt="Mollywood Times poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Drama</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">MOLLYWOOD TIMES</h3>
+                        </div>
+                    </div>
+
+                    <!-- Movie 14: MANJUMMEL BOYS  -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://mir-s3-cdn-cf.behance.net/project_modules/1400/612dec192636849.65def29b93ccd.jpg"
+                            alt="Ranabaali movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Thriller</span>
+                                <span class="movie-year">2024</span>
+                            </div>
+                            <h3 class="movie-title">MANJUMMEL BOYS</h3>
+                        </div>
+                    </div>
+
+                    <!-- Movie 15: RAMAYANA: RISE OF A LEGEND -->
+                    <div class="movie-card">
+                        <img class="movie-poster" src="https://im.rediff.com/movies/2026/oct/09ramayana.jpg"
+                            alt="Ramayana movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Epic / Fantasy</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">RAMAYANA: RISE OF A LEGEND</h3>
+                            <p class="movie-year upcoming-label">COMING SOON</p>
+                        </div>
+                    </div>
+
+                    <!-- Movie 16: RANABAALI  -->
+                    <div class="movie-card">
+                        <img class="movie-poster"
+                            src="https://static.10tv.in/wp-content/uploads/2026/02/Vijay-Rashmika-special-poster-from-Ranabaali-movie-1.jpg"
+                            alt="Ranabaali movie poster" loading="lazy"
+                            onerror="this.style.display='none'; this.nextElementSibling.hidden=false;">
+                        <div class="poster-placeholder" hidden>🎬</div>
+                        <div class="movie-info">
+                            <div class="movie-topline">
+                                <span class="genre-tag">Action Drama</span>
+                                <span class="movie-year">2026</span>
+                            </div>
+                            <h3 class="movie-title">RANABAALI</h3>
+                            <p class="movie-year upcoming-label">COMING SOON</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="empty-state" id="empty-movies" hidden>
+                    No movies found. Try another search.
+                </p>
+        </section>
+        <section class="section reviews-section" id="reviews">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">COMMUNITY VOICES</p>
+                        <h2>Latest Reviews</h2> <br>
+                        <input type="text" id="search-reviews" placeholder="Search for reviews..."
+                            aria-label="Search reviews"> <br>
+                    </div>
+                    <p id="no-reviews-message" hidden>
+                        No reviews found. Try another search.
+                    </p>
+                </div>
+                <div class="review-list" id="review-list">
+                    <!-- Reviews are generated by JavaScript. -->
+                </div>
+                <p class="empty-state" id="empty-reviews" hidden>
+                    No reviews yet. Be the first to write one!
+                </p>
+            </div>
+        </section>
+        <section class="section container" id="add-review">
+            <div class="form-card">
+                <p class="eyebrow">YOUR VOICE MATTERS</p>
+                <h2>Write a Movie Review</h2>
+                <p class="muted">
+                    Share your thoughts and help other movie lovers.
+                </p>
+                <form id="review-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="movie-title">Movie Title</label>
+                            <input type="text" id="movie-title" name="movieTitle" maxlength="100"
+                                placeholder="Enter movie name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewer-name">Your Name</label>
+                            <input type="text" id="reviewer-name" name="reviewerName" maxlength="60"
+                                placeholder="Enter your name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="movie-genre">Genre</label>
+                            <select id="movie-genre" name="genre" required>
+                                <option value="">Choose a genre</option>
+                                <option value="Action">Action</option>
+                                <option value="Drama">Drama</option>
+                                <option value="Sci-Fi">Sci-Fi</option>
+                                <option value="Thriller">Thriller</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Comedy">Comedy</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Animation">Animation</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="movie-year">Release Year</label>
+                            <input type="number" id="movie-year" name="year" min="1888" max="2100"
+                                placeholder="e.g. 2025" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="movie-poster">Poster Image URL (optional)</label>
+                        <input type="url" id="movie-poster" name="poster" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label>Your Rating</label>
+                        <div class="star-picker" role="radiogroup" aria-label="Your rating">
+                            <input type="radio" id="star-5" name="rating" value="5" required>
+                            <label for="star-5" title="5 stars">★</label>
+                            <input type="radio" id="star-4" name="rating" value="4">
+                            <label for="star-4" title="4 stars">★</label>
+                            <input type="radio" id="star-3" name="rating" value="3">
+                            <label for="star-3" title="3 stars">★</label>
+                            <input type="radio" id="star-2" name="rating" value="2">
+                            <label for="star-2" title="2 stars">★</label>
+                            <input type="radio" id="star-1" name="rating" value="1">
+                            <label for="star-1" title="1 star">★</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-text">Your Review</label>
+                        <textarea id="review-text" name="reviewText" rows="5" minlength="5" maxlength="1500"
+                            placeholder="What did you think about the movie?" required></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">
+                        Submit Review
+                    </button>
+                    <p id="form-message" class="form-message" role="status"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <a class="logo" href="#home">വെള്ളി<span>ത്തിര</span></a>
+        <p>സിനിമ ഇഷ്ടമുള്ളവരുടെ സ്വന്തം ഇടം! 🎬<br>
+            പടം കാണാം.അഭിപ്രായം പറയാം!</p>
+        <p class="copyright">
+            &copy; <span id="current-year"></span> ~ ABHINAND ~ NANDAKISHORE ~ AFLA ~ SUMNA
+        </p>
+    </footer>
+    <script>
+
+        const reviewForm = document.getElementById("review-form");
+        const formMessage = document.getElementById("form-message");
+
+        reviewForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const submitButton = reviewForm.querySelector(
+                'button[type="submit"]'
+            );
+
+            // Collect the form values
+            const formData = new FormData(reviewForm);
+
+            const reviewData = {
+                movieTitle: formData.get("movieTitle").trim(),
+                reviewerName: formData.get("reviewerName").trim(),
+                genre: formData.get("genre"),
+                year: Number(formData.get("year")),
+                poster: formData.get("poster").trim(),
+                rating: Number(formData.get("rating")),
+                reviewText: formData.get("reviewText").trim()
+            };
+
+            // Show loading status
+            submitButton.disabled = true;
+            submitButton.textContent = "Submitting...";
+            formMessage.textContent = "";
+            formMessage.style.color = "";
+
+            try {
+                const response = await fetch("/api/reviews", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Failed to submit your review."
+                    );
+                }
+
+                formMessage.textContent =
+                    result.message || "Your review was submitted successfully!";
+                formMessage.style.color = "green";
+
+                reviewForm.reset();
+                await loadReviews();
+
+            } catch (error) {
+                console.error("Review submission error:", error);
+
+                formMessage.textContent =
+                    error.message || "Unable to connect to the server. Please try again.";
+                formMessage.style.color = "red";
+
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Submit Review";
+            }
+        });
+
+        const reviewList = document.getElementById("review-list");
+        const emptyReviews = document.getElementById("empty-reviews");
+        const searchInput = document.getElementById("search-reviews");
+        const noReviewsMessage = document.getElementById("no-reviews-message");
+        const reviewCountElement = document.getElementById("review-count");
+
+        let allReviews = [];
+
+        function updateReviewCount() {
+            if (reviewCountElement) {
+                reviewCountElement.textContent = String(allReviews.length);
+            }
+        }
+
+        async function loadReviews() {
+            if (!reviewList) {
+                console.error('Missing HTML element: #review-list');
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/reviews");
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Failed to load reviews.");
+                }
+
+                // Accept either an array response or { reviews: [...] }.
+                allReviews = Array.isArray(data)
+                    ? data
+                    : (Array.isArray(data.reviews) ? data.reviews : []);
+
+                updateReviewCount();
+                renderReviews(allReviews);
+            } catch (error) {
+                console.error("Error loading reviews:", error);
+                reviewList.textContent = "Unable to load reviews. Please try again later.";
+                if (emptyReviews) emptyReviews.hidden = true;
+                if (noReviewsMessage) noReviewsMessage.hidden = true;
+            }
+        }
+
+        function renderReviews(reviews) {
+            if (!reviewList) return;
+
+            reviewList.replaceChildren();
+
+            const searchTerm = searchInput
+                ? searchInput.value.trim().toLowerCase()
+                : "";
+
+            if (emptyReviews) {
+                emptyReviews.hidden = allReviews.length > 0;
+            }
+
+            if (noReviewsMessage) {
+                noReviewsMessage.hidden = reviews.length > 0 || searchTerm.length === 0;
+            }
+
+            reviews.forEach((review) => {
+                const card = document.createElement("article");
+                card.className = "review-card";
+
+                const header = document.createElement("div");
+                header.className = "review-card-header";
+
+                const title = document.createElement("h3");
+                title.textContent = review.movieTitle || "Untitled Movie";
+
+                const rating = document.createElement("span");
+                rating.className = "review-rating";
+                rating.textContent = `★ ${Number(review.rating || 0)}/5`;
+
+                header.append(title, rating);
+
+                const reviewer = document.createElement("p");
+                reviewer.className = "reviewer";
+                reviewer.textContent = `Reviewed by ${review.reviewerName || "Anonymous"}`;
+
+                const genreYear = document.createElement("p");
+                genreYear.className = "muted";
+                const details = [review.genre, review.year].filter(Boolean);
+                genreYear.textContent = details.join(" · ");
+
+                const comment = document.createElement("p");
+                comment.className = "review-comment";
+                comment.textContent = review.reviewText || review.comment || "";
+
+                const date = document.createElement("p");
+                date.className = "review-date";
+                if (review.createdAt) {
+                    const parsedDate = new Date(review.createdAt);
+                    date.textContent = Number.isNaN(parsedDate.getTime())
+                        ? ""
+                        : parsedDate.toLocaleDateString();
+                }
+
+                card.append(header, reviewer, genreYear, comment);
+                if (date.textContent) card.appendChild(date);
+                reviewList.appendChild(card);
+            });
+        }
+
+        function searchReviews() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            const filteredReviews = allReviews.filter((review) => {
+                const searchableText = [
+                    review.movieTitle,
+                    review.reviewerName,
+                    review.genre,
+                    review.year,
+                    review.reviewText,
+                    review.comment
+                ]
+                    .filter((value) => value !== undefined && value !== null)
+                    .join(" ")
+                    .toLowerCase();
+
+                return searchableText.includes(searchTerm);
+            });
+
+            renderReviews(filteredReviews);
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener("input", searchReviews);
+        }
+
+        // The script is at the end of body, so the DOM elements already exist.
+        loadReviews();
+
+        // Prevent HTML injection from review content
+        function escapeHTML(value) {
+            return String(value).replace(/[&<>"']/g, (char) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[char]);
+        }
+
+
+    </script>
+</body>
+
+</html>

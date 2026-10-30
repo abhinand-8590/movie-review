@@ -1,0 +1,782 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineScope | Admin Dashboard</title>
+
+<style>
+:root {
+    color-scheme: dark;
+    --bg: #080a10;
+    --surface: #111622;
+    --surface-light: #1a2232;
+    --text: #f7f8fc;
+    --muted: #a4aec0;
+    --accent: #ffc247;
+    --accent-hover: #ffda7c;
+    --border: rgba(163,178,205,.16);
+    --danger: #ff7373;
+    --glow: rgba(255,194,71,.16);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+
+.layout {
+    display: grid;
+    grid-template-columns: 235px minmax(0,1fr);
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 26px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+    padding: 0 10px;
+    letter-spacing: -1px;
+}
+.logo span { color: var(--accent); }
+
+.side-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+
+.nav-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 13px 12px;
+    margin: 5px 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+}
+.nav-btn:hover, .nav-btn.active {
+    color: var(--accent);
+    background: var(--glow);
+    border-color: var(--border);
+}
+
+.sidebar-bottom { margin-top: auto; }
+
+.main { min-width: 0; padding: 30px; }
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.topbar h1 { margin: 0 0 8px; font-size: 28px; }
+.muted { color: var(--muted); font-size: 13px; }
+
+.btn {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 15px;
+    background: var(--surface-light);
+    color: var(--text);
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary {
+    background: var(--accent);
+    color: #17120a;
+    border-color: var(--accent);
+    font-weight: bold;
+}
+.btn.primary:hover { background: var(--accent-hover); }
+.btn.danger { color: var(--danger); }
+.btn.small { padding: 7px 10px; font-size: 12px; }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.stat, .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+}
+
+.stat { padding: 22px; }
+.stat p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.stat h2 { margin: 0; font-size: 30px; }
+.stat .gold { color: var(--accent); }
+
+.panel { overflow: hidden; }
+
+.panel-head {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.panel-head h2 { margin: 0; font-size: 18px; }
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input, textarea, select {
+    width: 100%;
+    background: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 12px;
+    outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+}
+
+.toolbar input { width: 220px; }
+
+.table-wrap { overflow-x: auto; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 720px;
+}
+
+th, td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: top;
+}
+
+th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+
+td { line-height: 1.5; }
+td .muted { display: block; margin-top: 4px; }
+.actions { display: flex; gap: 7px; }
+
+.rating { color: var(--accent); white-space: nowrap; }
+
+.notice {
+    display: none;
+    padding: 13px 16px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 13px;
+}
+.notice.show { display: block; }
+.notice.error { color: var(--danger); }
+.notice.success { color: var(--accent); }
+
+.empty { text-align: center; padding: 40px; color: var(--muted); }
+.hidden { display: none !important; }
+
+dialog {
+    width: min(580px, calc(100% - 24px));
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+}
+dialog::backdrop { background: rgba(0,0,0,.75); }
+
+.modal-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.modal-head h2 { margin: 0; font-size: 20px; }
+.modal-body { padding: 24px; }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 17px;
+}
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field.full { grid-column: 1/-1; }
+.field label { font-size: 12px; color: var(--muted); }
+textarea { min-height: 105px; resize: vertical; }
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+@media(max-width: 850px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+        padding: 15px;
+        gap: 15px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .sidebar nav { display: flex; flex-wrap: wrap; }
+    .side-label, .sidebar-bottom { display: none; }
+    .nav-btn { width: auto; }
+    .main { padding: 20px 14px; }
+    .stats { gap: 9px; }
+    .stat { padding: 15px; }
+    .stat h2 { font-size: 23px; }
+}
+@media(max-width: 480px) {
+    .stats { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .field.full { grid-column: auto; }
+    .toolbar, .toolbar input { width: 100%; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="logo">Cine<span>Scope</span>.</div>
+
+        <div>
+            <div class="side-label">ADMINISTRATION</div>
+            <nav>
+                <button class="nav-btn active" data-view="dashboard">▦ Dashboard</button>
+                <button class="nav-btn" data-view="movies">▣ Movies</button>
+                <button class="nav-btn" data-view="reviews">☆ Reviews</button>
+            </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+            <button class="nav-btn" id="logoutBtn">↪ Log out</button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="muted" id="pageSubtitle">Manage your CineScope collection.</div>
+            </div>
+            <button class="btn primary" id="addBtn">+ Add Movie</button>
+        </header>
+
+        <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+        <section id="dashboardView">
+            <div class="stats">
+                <article class="stat">
+                    <p>Total Movies</p>
+                    <h2 id="movieCount" class="gold">—</h2>
+                </article>
+                <article class="stat">
+                    <p>Total Reviews</p>
+                    <h2 id="reviewCount">—</h2>
+                </article>
+                <article class="stat">
+                    <p>Average Review Rating</p>
+                    <h2 id="averageRating" class="gold">—</h2>
+                </article>
+            </div>
+
+            <section class="panel">
+                <div class="panel-head">
+                    <h2>Recent Reviews</h2>
+                    <button class="btn" data-view="reviews">View all reviews →</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Movie</th><th>Reviewer</th><th>Rating</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="recentReviews"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section id="moviesView" class="hidden">
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Movie Collection</h2>
+                    <div class="toolbar">
+                        <input id="movieSearch" placeholder="Search movies..." aria-label="Search movies">
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Movie</th><th>Genre</th><th>Year</th>
+                                <th>Language</th><th>Rating</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moviesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="reviewsView" class="hidden">
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Review Management</h2>
+                    <div class="toolbar">
+                        <input id="reviewSearch" placeholder="Search reviews..." aria-label="Search reviews">
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Movie / Reviewer</th><th>Genre / Year</th>
+                                <th>Rating</th><th>Review</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<dialog id="editDialog">
+    <div class="modal-head">
+        <h2 id="dialogTitle">Add Movie</h2>
+        <button class="btn" id="closeDialog" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+        <form id="editorForm">
+            <div id="editorFields" class="form-grid"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn" id="cancelDialog">Cancel</button>
+                <button type="submit" class="btn primary" id="saveBtn">Save</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+const API = "/api/admin";
+let movies = [];
+let reviews = [];
+let currentView = "dashboard";
+let editorType = "movie";
+let editingId = null;
+let noticeTimer;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value = "") {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function showNotice(message, type = "success") {
+    const notice = $("notice");
+    notice.textContent = message;
+    notice.className = "notice show " + type;
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(() => notice.className = "notice", 4500);
+}
+
+async function apiRequest(url, options = {}) {
+    const response = await fetch(url, {
+        credentials: "same-origin",
+        ...options,
+        headers: {
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...options.headers
+        }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401 || response.status === 403) {
+        window.location.href = "login.html";
+        throw new Error(data.message || "Admin access required.");
+    }
+
+    if (!response.ok) {
+        throw new Error(data.message || "Request failed.");
+    }
+
+    return data;
+}
+
+function dateText(date) {
+    if (!date) return "—";
+    const parsed = new Date(date);
+    return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleDateString();
+}
+
+function setView(view) {
+    currentView = view;
+
+    ["dashboard", "movies", "reviews"].forEach(name => {
+        $(name + "View").classList.toggle("hidden", name !== view);
+    });
+
+    document.querySelectorAll("[data-view]").forEach(button => {
+        if (button.classList.contains("nav-btn")) {
+            button.classList.toggle("active", button.dataset.view === view);
+        }
+    });
+
+    $("pageTitle").textContent =
+        view === "dashboard" ? "Dashboard" :
+        view === "movies" ? "Movie Management" : "Review Management";
+
+    $("pageSubtitle").textContent = {
+        dashboard: "Manage your CineScope collection.",
+        movies: "Add, edit and maintain your movie catalogue.",
+        reviews: "Manage audience reviews and ratings."
+    }[view];
+
+    $("addBtn").textContent = view === "reviews" ? "+ Add Review" : "+ Add Movie";
+    $("addBtn").classList.toggle("hidden", view === "dashboard");
+
+    if (view === "dashboard") renderDashboard();
+    if (view === "movies") renderMovies();
+    if (view === "reviews") renderReviews();
+}
+
+async function loadData() {
+    try {
+        const [movieData, reviewData] = await Promise.all([
+            apiRequest(`${API}/movies`),
+            apiRequest(`${API}/reviews`)
+        ]);
+
+        movies = movieData.movies;
+        reviews = reviewData.reviews;
+
+        if (!Array.isArray(movies) || !Array.isArray(reviews)) {
+            throw new Error("The API must return movies and reviews arrays.");
+        }
+
+        renderDashboard();
+        renderMovies();
+        renderReviews();
+    } catch (error) {
+        showNotice(error.message, "error");
+    }
+}
+
+function renderDashboard() {
+    $("movieCount").textContent = movies.length;
+    $("reviewCount").textContent = reviews.length;
+
+    const average = reviews.length
+        ? reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / reviews.length
+        : 0;
+
+    $("averageRating").textContent = average.toFixed(1) + " / 5";
+
+    const recent = [...reviews]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+
+    $("recentReviews").innerHTML = recent.length ? recent.map(review => `
+        <tr>
+            <td>${escapeHTML(review.movieTitle)}</td>
+            <td>${escapeHTML(review.reviewerName)}</td>
+            <td class="rating">★ ${Number(review.rating).toFixed(1)}</td>
+            <td>${dateText(review.createdAt)}</td>
+        </tr>
+    `).join("") : `<tr><td colspan="4" class="empty">No reviews yet.</td></tr>`;
+}
+
+function renderMovies() {
+    const query = $("movieSearch").value.trim().toLowerCase();
+
+    const filtered = movies.filter(movie =>
+        [movie.title, movie.language, ...(movie.genre || [])]
+            .some(value => String(value || "").toLowerCase().includes(query))
+    );
+
+    $("moviesTable").innerHTML = filtered.length ? filtered.map(movie => `
+        <tr>
+            <td>
+                <strong>${escapeHTML(movie.title)}</strong>
+                <span class="muted">${escapeHTML((movie.description || "").slice(0, 85))}</span>
+            </td>
+            <td>${escapeHTML((movie.genre || []).join(", ") || "—")}</td>
+            <td>${escapeHTML(movie.releaseYear ?? "—")}</td>
+            <td>${escapeHTML(movie.language || "Malayalam")}</td>
+            <td class="rating">★ ${Number(movie.averageRating || 0).toFixed(1)}
+                <span class="muted">${Number(movie.reviewCount || 0)} reviews</span>
+            </td>
+            <td><div class="actions">
+                <button class="btn small" data-edit-movie="${escapeHTML(movie._id)}">Edit</button>
+                <button class="btn small danger" data-delete-movie="${escapeHTML(movie._id)}">Delete</button>
+            </div></td>
+        </tr>
+    `).join("") : `<tr><td colspan="6" class="empty">No movies found.</td></tr>`;
+}
+
+function renderReviews() {
+    const query = $("reviewSearch").value.trim().toLowerCase();
+
+    const filtered = reviews.filter(review =>
+        [review.movieTitle, review.reviewerName, review.genre, review.reviewText]
+            .some(value => String(value || "").toLowerCase().includes(query))
+    );
+
+    $("reviewsTable").innerHTML = filtered.length ? filtered.map(review => `
+        <tr>
+            <td><strong>${escapeHTML(review.movieTitle)}</strong>
+                <span class="muted">${escapeHTML(review.reviewerName)}</span>
+            </td>
+            <td>${escapeHTML(review.genre)}<span class="muted">${escapeHTML(review.year)}</span></td>
+            <td class="rating">★ ${Number(review.rating).toFixed(1)}</td>
+            <td>${escapeHTML((review.reviewText || "").slice(0, 150))}${review.reviewText?.length > 150 ? "…" : ""}</td>
+            <td><div class="actions">
+                <button class="btn small" data-edit-review="${escapeHTML(review._id)}">Edit</button>
+                <button class="btn small danger" data-delete-review="${escapeHTML(review._id)}">Delete</button>
+            </div></td>
+        </tr>
+    `).join("") : `<tr><td colspan="5" class="empty">No reviews found.</td></tr>`;
+}
+
+const genres = [
+    "Action", "Drama", "Sci-Fi", "Thriller",
+    "Adventure", "Comedy", "Romance", "Animation"
+];
+
+function field(name, label, value = "", type = "text", options = {}) {
+    const id = "field-" + name;
+    let control;
+
+    if (options.choices) {
+        control = `<select id="${id}" name="${name}" ${options.required ? "required" : ""}>
+            ${options.choices.map(choice => `
+                <option value="${escapeHTML(choice)}" ${String(choice) === String(value) ? "selected" : ""}>
+                    ${escapeHTML(choice || "Select")}
+                </option>`).join("")}
+        </select>`;
+    } else if (type === "textarea") {
+        control = `<textarea id="${id}" name="${name}" ${options.required ? "required" : ""} ${options.maxlength ? `maxlength="${options.maxlength}"` : ""}>${escapeHTML(value)}</textarea>`;
+    } else {
+        control = `<input id="${id}" name="${name}" type="${type}" value="${escapeHTML(value)}"
+            ${options.required ? "required" : ""}
+            ${options.min !== undefined ? `min="${options.min}"` : ""}
+            ${options.max !== undefined ? `max="${options.max}"` : ""}
+            ${options.maxlength ? `maxlength="${options.maxlength}"` : ""}>`;
+    }
+
+    return `<div class="field ${options.full ? "full" : ""}">
+        <label for="${id}">${label}</label>${control}
+    </div>`;
+}
+
+function openEditor(type, item = null) {
+    editorType = type;
+    editingId = item?._id || null;
+
+    $("dialogTitle").textContent =
+        (item ? "Edit " : "Add ") + (type === "movie" ? "Movie" : "Review");
+
+    let html;
+
+    if (type === "movie") {
+        html =
+            field("title", "Movie title", item?.title || "", "text", { required: true, maxlength: 150 }) +
+            field("releaseYear", "Release year", item?.releaseYear ?? "", "number", { min: 1888, max: 2100 }) +
+            field("genre", "Genres (comma-separated)", (item?.genre || []).join(", ")) +
+            field("language", "Language", item?.language || "Malayalam") +
+            field("description", "Description", item?.description || "", "textarea", { required: true, full: true, maxlength: 5000 });
+    } else {
+        html =
+            field("movieTitle", "Movie title", item?.movieTitle || "", "text", { required: true, maxlength: 100 }) +
+            field("reviewerName", "Reviewer name", item?.reviewerName || "", "text", { required: true, maxlength: 60 }) +
+            field("genre", "Genre", item?.genre || "Drama", "text", { required: true, choices: genres }) +
+            field("year", "Release year", item?.year ?? new Date().getFullYear(), "number", { required: true, min: 1888, max: 2100 }) +
+            field("rating", "Rating (1–5)", item?.rating ?? 5, "number", { required: true, min: 1, max: 5 }) +
+            field("poster", "Poster URL (optional)", item?.poster || "", "url", { full: true }) +
+            field("reviewText", "Review text", item?.reviewText || "", "textarea", { required: true, full: true, maxlength: 1500 });
+    }
+
+    $("editorFields").innerHTML = html;
+    $("editDialog").showModal();
+}
+
+function closeEditor() {
+    $("editDialog").close();
+}
+
+$("addBtn").addEventListener("click", () => {
+    if (currentView === "movies") openEditor("movie");
+    if (currentView === "reviews") openEditor("review");
+});
+
+$("closeDialog").addEventListener("click", closeEditor);
+$("cancelDialog").addEventListener("click", closeEditor);
+
+$("editorForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(formData.entries());
+
+    if (editorType === "movie") {
+        payload.genre = payload.genre
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean);
+
+        if (payload.releaseYear === "") delete payload.releaseYear;
+        else payload.releaseYear = Number(payload.releaseYear);
+    } else {
+        payload.year = Number(payload.year);
+        payload.rating = Number(payload.rating);
+        payload.genre = payload.genre.trim();
+    }
+
+    const collection = editorType === "movie" ? "movies" : "reviews";
+    const url = `${API}/${collection}${editingId ? "/" + encodeURIComponent(editingId) : ""}`;
+    const method = editingId ? "PUT" : "POST";
+
+    $("saveBtn").disabled = true;
+
+    try {
+        const data = await apiRequest(url, {
+            method,
+            body: JSON.stringify(payload)
+        });
+
+        closeEditor();
+        await loadData();
+        showNotice(data.message || `${editorType === "movie" ? "Movie" : "Review"} saved successfully.`);
+    } catch (error) {
+        showNotice(error.message, "error");
+    } finally {
+        $("saveBtn").disabled = false;
+    }
+});
+
+document.addEventListener("click", async event => {
+    const button = event.target.closest("button");
+    if (!button) return;
+
+    if (button.dataset.view) {
+        setView(button.dataset.view);
+        return;
+    }
+
+    if (button.dataset.editMovie) {
+        const movie = movies.find(item => item._id === button.dataset.editMovie);
+        if (movie) openEditor("movie", movie);
+    }
+
+    if (button.dataset.editReview) {
+        const review = reviews.find(item => item._id === button.dataset.editReview);
+        if (review) openEditor("review", review);
+    }
+
+    const movieId = button.dataset.deleteMovie;
+    const reviewId = button.dataset.deleteReview;
+
+    if (movieId || reviewId) {
+        const type = movieId ? "movies" : "reviews";
+        const id = movieId || reviewId;
+
+        if (!confirm(`Are you sure you want to delete this ${type === "movies" ? "movie" : "review"}?`)) return;
+
+        try {
+            const data = await apiRequest(`${API}/${type}/${encodeURIComponent(id)}`, {
+                method: "DELETE"
+            });
+            await loadData();
+            showNotice(data.message || "Deleted successfully.");
+        } catch (error) {
+            showNotice(error.message, "error");
+        }
+    }
+});
+
+$("movieSearch").addEventListener("input", renderMovies);
+$("reviewSearch").addEventListener("input", renderReviews);
+
+$("logoutBtn").addEventListener("click", async () => {
+    try {
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "same-origin"
+        });
+    } finally {
+        window.location.href = "/";
+    }
+});
+
+async function initAdmin() {
+    try {
+        const data = await apiRequest("/api/me");
+
+        if (data.user?.role !== "admin") {
+            window.location.href = "/";
+            return;
+        }
+
+        await loadData();
+        setView("dashboard");
+    } catch (error) {
+        if (error.message) showNotice(error.message, "error");
+    }
+}
+
+initAdmin();
+</script>
+</body>
+</html>
